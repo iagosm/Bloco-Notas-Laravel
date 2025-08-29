@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\PrincipalController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -13,6 +15,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+// Autenticação
+Route::get('/login', [AuthController::class, 'login']);
+Route::post('/loginAccount', [AuthController::class, 'loginAccount']);
+Route::get('/logout', [AuthController::class, 'logout']);
