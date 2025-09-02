@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class AuthController extends Controller
@@ -25,12 +26,30 @@ class AuthController extends Controller
         );
         $usuario = $request->input('usuario');
         $senha = $request->input('senha');
-        // dd($request);
-        // return view('login');
+        // get all Users 
+        $user = User::where('username', $usuario)
+        ->where('deleted_at', NULL)
+        ->first();
+        if(!$user || !password_verify($senha, $user->password)) {
+            return redirect()->back()->withInput()->with('loginError', 'Usuário ou Senha incorretos.');
+        }
+        
+        // update last login
+        $user->last_login = date('Y-m-d H:i:s');
+        $user->save();
+        session([
+            'user' => [
+                'id' => $user->id,
+                'username' => $user->username,
+            ]
+        ]);
+        echo 'login com sucesso';
     }
     
     public function logout()
     {
-        echo 'logout';
+        // logout
+        session()->forget('user');
+        return redirect()->to('/login');
     }
 }

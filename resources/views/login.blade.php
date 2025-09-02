@@ -22,4 +22,9 @@
       <button type="submit">Entrar</button>
     </div>
   </form>
+  @if(session('loginError'))
+    <div>
+      <h2>{{ session('loginError') }}</h2>
+    </div>
+  @endif
 @endsection
