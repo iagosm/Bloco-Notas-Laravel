@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PrincipalController;
 use App\Http\Middleware\CheckIsLogged;
+use App\Http\Middleware\CheckIsNotLogged;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -16,13 +17,17 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-// Autenticação
-Route::get('/login', [AuthController::class, 'login']);
-Route::post('/loginAccount', [AuthController::class, 'loginAccount']);
-Route::get('/logout', [AuthController::class, 'logout']);
+// Autenticação de usuários não logados
+Route::middleware([CheckIsNotLogged::class])->group(function() {
+  Route::get('/login', [AuthController::class, 'login'])->name('login');
+  Route::post('/loginAccount', [AuthController::class, 'loginAccount']);
+});
 
-
+// Autenticação de usuários logados
 Route::middleware([CheckIsLogged::class])->group(function(){
-  Route::get('/', [PrincipalController::class, 'index']);
-  Route::get('/newNote', [PrincipalController::class, 'newNote']);
+  Route::get('/', [PrincipalController::class, 'index'])->name('home');
+  Route::get('/newNote', [PrincipalController::class, 'newNote'])->name('new');
+  Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
+  Route::get('/editNote/{id}', [PrincipalController::class, 'editNote'])->name('edit');
+  Route::get('/deleteNote/{id}', [PrincipalController::class, 'deleteNote'])->name('delete');
 });
